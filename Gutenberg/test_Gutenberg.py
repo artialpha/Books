@@ -11,8 +11,8 @@ class TestGutenberg(TestCase):
         for x in titles:
             result = guten.get_json(x)
             self.assertEqual(x, result['results'][0]['title'])
-            formats = guten.get_text(x)
-            print(formats)
+            text = guten.get_text(x)
+            print(text)
 
     def test_get_json_of_title(self):
         guten = Gutenberg()
