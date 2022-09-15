@@ -43,14 +43,14 @@ class AnalyzeText:
     @staticmethod
     def get_medium_c1_frequency():
         reader = PdfReader("c1.pdf")
-
-
         for page in reader.pages:
             for line in page.extract_text().splitlines():
                 if line.count("/") == 2:
                     line = line.split()
-                    print(line, line[1].isascii())
+                    if len(line) == 1 or not line[1].isascii():
+                        print(line)
 
+        # it must be one word + IPA or only one word (like in alternate)
         #['affluent', '/ˈæf.lu.ənt/'] False
         #['affluent', 'families/nations/neighbourhoods'] True
         
