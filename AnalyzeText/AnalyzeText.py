@@ -5,6 +5,8 @@ from wordfreq import zipf_frequency  # https://pypi.org/project/wordfreq/
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from PyPDF2 import PdfReader
+from pickle import dump, load
+from os.path import exists
 nltk.download("stopwords")
 
 
@@ -40,26 +42,33 @@ class AnalyzeText:
 
         return self.frequency_list
 
-    @staticmethod
-    def get_medium_c1_frequency():
-        reader = PdfReader("c1.pdf")
-        for page in reader.pages:
-            for line in page.extract_text().splitlines():
-                if line.count("/") == 2:
-                    line = line.split()
-                    if len(line) == 1 or not line[1].isascii():
-                        print(line)
+    def get_medium_c1_frequency(self):
+        words = []
+        if exists("c1 list 1.txt"):
+            with open("c1 list 1.txt", "rb") as file:
+                words = load(file)
+        else:
+            reader = PdfReader("c1.pdf")
+            for page in reader.pages:
+                for line in page.extract_text().splitlines():
+                    if line.count("/") == 2:
+                        line = line.split()
+                        if len(line) == 1 or not line[1].isascii():
+                            words.append(line[0])
+            with open("c1 list 1.txt", "wb+") as file:
+                dump(words, file)
+        print(words)
+        print(len(words))
+        words = np.array([zipf_frequency(word, self.language[:2]) for word in words])
+        mean = np.mean(words)
+        median = np.median(words)
+        print(f'mean: {mean:>2.3}\n'
+              f'median: {median}')
 
-        # it must be one word + IPA or only one word (like in alternate)
-        #['affluent', '/ˈæf.lu.ənt/'] False
-        #['affluent', 'families/nations/neighbourhoods'] True
+
+
         
 
         
         
-        #after learner example
-        """
-        for page in reader.pages:
-            text += page.extract_text() + "\n"
-        print(text)
-        """
+
