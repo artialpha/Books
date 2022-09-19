@@ -1,12 +1,15 @@
 from string import punctuation
 import nltk
 import numpy as np
+import requests
 from wordfreq import zipf_frequency  # https://pypi.org/project/wordfreq/
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from PyPDF2 import PdfReader
 from pickle import dump, load
 from os.path import exists
+from bs4 import BeautifulSoup
+from collections import namedtuple
 nltk.download("stopwords")
 
 
@@ -42,10 +45,10 @@ class AnalyzeText:
 
         return self.frequency_list
 
-    def get_medium_c1_frequency(self):
+    def get_medium_c1_frequency_from_list(self):
         words = []
-        if exists("c1 list 1.txt"):
-            with open("c1 list 1.txt", "rb") as file:
+        if exists("c1 list 1"):
+            with open("c1 list 1", "rb") as file:
                 words = load(file)
         else:
             reader = PdfReader("c1.pdf")
@@ -55,20 +58,43 @@ class AnalyzeText:
                         line = line.split()
                         if len(line) == 1 or not line[1].isascii():
                             words.append(line[0])
-            with open("c1 list 1.txt", "wb+") as file:
+            with open("c1 list 1", "wb+") as file:
                 dump(words, file)
         print(words)
         print(len(words))
+        mm = self.get_mean_median(words)
+        print(f'MM from list:\n'
+              f'mean: {mm.mean:.3}\n'
+              f'median: {mm.median}')
+
+    def get_medium_c1_frequency_from_website(self):
+        #http://www.wordcyclopedia.com/english/c1
+        words = []
+        if exists("c1 list 2"):
+            with open("c1 list 2", "rb") as file:
+                words = load(file)
+        else:
+            url = "http://www.wordcyclopedia.com/english/c1"
+            response = requests.get(url)
+            soup = BeautifulSoup(response.content, "html.parser")
+            elements = soup.find_all("a", class_="word")
+            for word in elements:
+                print(word.text)
+                words.append(word.text)
+            with open("c1 list 2", "wb+") as file:
+                dump(words, file)
+        mm = self.get_mean_median(words)
+        print(f'MM from website:\n'
+              f'mean: {mm.mean:.3}\n'
+              f'median: {mm.median}')
+
+    def get_mean_median(self, words):
         words = np.array([zipf_frequency(word, self.language[:2]) for word in words])
         mean = np.mean(words)
         median = np.median(words)
-        print(f'mean: {mean:>2.3}\n'
-              f'median: {median}')
+        MeanMedian = namedtuple("MeanMedian", "mean median")
+        mm = MeanMedian(mean, median)
+        return mm
 
 
-
-        
-
-        
-        
 
