@@ -29,8 +29,7 @@ class TestAnalyzeText(TestCase):
 
     def test_c1_freq(self):
         an = AnalyzeText()
-        an.get_medium_c1_frequency_from_list()
-        an.get_medium_c1_frequency_from_website()
+        print(f'c1 zipf ceiling: {an.c1_zipf_ceiling}')
 
     def test_zipf(self):
         for word in c1_words:

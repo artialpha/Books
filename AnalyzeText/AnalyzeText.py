@@ -26,6 +26,9 @@ class AnalyzeText:
         self.median = None
         self.mean = None
 
+        self.c1_zipf_ceiling = None
+        self.get_c1_zipf_ceiling()
+
     #Get rid of stop words, punctuation marks and there's no repetitions
     def get_words(self):
         words = word_tokenize(self.text)
@@ -60,12 +63,11 @@ class AnalyzeText:
                             words.append(line[0])
             with open("c1 list 1", "wb+") as file:
                 dump(words, file)
-        print(words)
-        print(len(words))
         mm = self.get_mean_median(words)
         print(f'MM from list:\n'
               f'mean: {mm.mean:.3}\n'
               f'median: {mm.median}')
+        return mm
 
     def get_medium_c1_frequency_from_website(self):
         #http://www.wordcyclopedia.com/english/c1
@@ -87,14 +89,21 @@ class AnalyzeText:
         print(f'MM from website:\n'
               f'mean: {mm.mean:.3}\n'
               f'median: {mm.median}')
+        return mm
 
     def get_mean_median(self, words):
         words = np.array([zipf_frequency(word, self.language[:2]) for word in words])
-        mean = np.mean(words)
-        median = np.median(words)
+        mean = np.mean(words).item()            #item converts to native python type
+        median = np.median(words).item()
         MeanMedian = namedtuple("MeanMedian", "mean median")
         mm = MeanMedian(mean, median)
         return mm
+
+    def get_c1_zipf_ceiling(self):
+        median_list = self.get_medium_c1_frequency_from_list().median
+        median_website = self.get_medium_c1_frequency_from_website().median
+        self.c1_zipf_ceiling = round(min(median_list, median_website))
+
 
 
 
