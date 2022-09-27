@@ -17,7 +17,7 @@ class AnalyzeText:
 
     def __init__(self, text="", language='english'):
         self.text = text
-        self.filtered_dict = None
+        self.filtered_list = None
         self.frequency_list = None
         self.language = language
         self.stop_words = stopwords.words(language)
@@ -32,36 +32,39 @@ class AnalyzeText:
     #Get rid of stop words, punctuation marks and there's no repetitions
     def get_words(self):
         words = word_tokenize(self.text)
-        print(f'tokenized {words}')
+        #print(f'tokenized {words}')
         filtered_list = [x for word in words if (x := word.casefold())
                          not in self.stop_words and word not in punctuation]
-        self.filtered_dict = list(set(filtered_list))
-        return self.filtered_dict
+        self.filtered_list = list(set(filtered_list))
+        return self.filtered_list
 
     def get_word_frequency(self):
-        self.frequency_list = np.array([zipf_frequency(word, self.language[:2]) for word in self.filtered_dict])
+        self.frequency_list = np.array([zipf_frequency(word, self.language[:2]) for word in self.filtered_list])
         self.median = np.median(self.frequency_list)
         self.mean = np.mean(self.frequency_list)
-
-        print("a frequent word 'kind':", zipf_frequency("kind", self.language[:2])) # 5.45
-        print("a rare word 'benevolence':", zipf_frequency("benevolence", self.language[:2]))   # 2.78
-
         return self.frequency_list
+
+    def get_c1_words_from_text(self):
+        self.get_words()
+        print(self.c1_zipf_ceiling)
+        ls = [(word, zipf) for word in self.filtered_list if (zipf := zipf_frequency(word, self.language[:2])) <
+              self.c1_zipf_ceiling]
+        return ls
 
     def get_medium_c1_frequency_from_list(self):
         words = []
-        if exists("c1 list 1"):
-            with open("c1 list 1", "rb") as file:
+        if exists(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 1"):
+            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 1", "rb") as file:
                 words = load(file)
         else:
-            reader = PdfReader("c1.pdf")
+            reader = PdfReader(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1.pdf")
             for page in reader.pages:
                 for line in page.extract_text().splitlines():
                     if line.count("/") == 2:
                         line = line.split()
                         if len(line) == 1 or not line[1].isascii():
                             words.append(line[0])
-            with open("c1 list 1", "wb+") as file:
+            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 1", "wb+") as file:
                 dump(words, file)
         mm = self.get_mean_median(words)
         print(f'MM from list:\n'
@@ -72,8 +75,8 @@ class AnalyzeText:
     def get_medium_c1_frequency_from_website(self):
         #http://www.wordcyclopedia.com/english/c1
         words = []
-        if exists("c1 list 2"):
-            with open("c1 list 2", "rb") as file:
+        if exists(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 2"):
+            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 2", "rb") as file:
                 words = load(file)
         else:
             url = "http://www.wordcyclopedia.com/english/c1"
@@ -83,7 +86,7 @@ class AnalyzeText:
             for word in elements:
                 print(word.text)
                 words.append(word.text)
-            with open("c1 list 2", "wb+") as file:
+            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 2", "wb+") as file:
                 dump(words, file)
         mm = self.get_mean_median(words)
         print(f'MM from website:\n'
