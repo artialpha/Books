@@ -46,25 +46,25 @@ class AnalyzeText:
 
     def get_c1_words_from_text(self):
         self.get_words()
-        print(self.c1_zipf_ceiling)
+        print(f'max zip: {self.c1_zipf_ceiling}')
         ls = [(word, zipf) for word in self.filtered_list if (zipf := zipf_frequency(word, self.language[:2])) <
               self.c1_zipf_ceiling]
         return ls
 
     def get_medium_c1_frequency_from_list(self):
         words = []
-        if exists(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 1"):
-            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 1", "rb") as file:
+        if exists(r"AnalyzeText\c1 list 1"):
+            with open(r"AnalyzeText\c1 list 1", "rb") as file:
                 words = load(file)
         else:
-            reader = PdfReader(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1.pdf")
+            reader = PdfReader(r"AnalyzeText\c1.pdf")
             for page in reader.pages:
                 for line in page.extract_text().splitlines():
                     if line.count("/") == 2:
                         line = line.split()
                         if len(line) == 1 or not line[1].isascii():
                             words.append(line[0])
-            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 1", "wb+") as file:
+            with open(r"AnalyzeText\c1 list 1", "wb+") as file:
                 dump(words, file)
         mm = self.get_mean_median(words)
         print(f'MM from list:\n'
@@ -75,8 +75,8 @@ class AnalyzeText:
     def get_medium_c1_frequency_from_website(self):
         #http://www.wordcyclopedia.com/english/c1
         words = []
-        if exists(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 2"):
-            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 2", "rb") as file:
+        if exists(r"AnalyzeText\c1 list 2"):
+            with open(r"C:AnalyzeText\c1 list 2", "rb") as file:
                 words = load(file)
         else:
             url = "http://www.wordcyclopedia.com/english/c1"
@@ -86,7 +86,7 @@ class AnalyzeText:
             for word in elements:
                 print(word.text)
                 words.append(word.text)
-            with open(r"C:\Users\Dymitr\PycharmProjects\Books\AnalyzeText\c1 list 2", "wb+") as file:
+            with open(r"AnalyzeText\c1 list 2", "wb+") as file:
                 dump(words, file)
         mm = self.get_mean_median(words)
         print(f'MM from website:\n'
@@ -103,9 +103,17 @@ class AnalyzeText:
         return mm
 
     def get_c1_zipf_ceiling(self):
-        median_list = self.get_medium_c1_frequency_from_list().median
-        median_website = self.get_medium_c1_frequency_from_website().median
-        self.c1_zipf_ceiling = round(min(median_list, median_website))
+        if exists('c1_zipf'):
+            with open('c1_zipf', 'rb') as f:
+                self.c1_zipf_ceiling = load(f)
+                print(f'Data loaded from file "c1_zipf": {self.c1_zipf_ceiling}')
+        else:
+            median_list = self.get_medium_c1_frequency_from_list().median
+            median_website = self.get_medium_c1_frequency_from_website().median
+            self.c1_zipf_ceiling = round(min(median_list, median_website))
+            print(f'c1 in get: {self.c1_zipf_ceiling}')
+            with open('c1_zipf', 'wb+') as f:
+                dump(self.c1_zipf_ceiling, f)
 
 
 
