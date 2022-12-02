@@ -27,7 +27,8 @@ class Gutenberg:
                 print(f'{title}\n'
                       f"number of results: {len(json['results'])}\n"
                       f'number of formats in a result: {len(formats)}\n'
-                      f'URL: {self.url}')
+                      f'URL: {self.url}\n'
+                      f'Text url: {text_url}')
                 text = requests.get(text_url).text
                 return text
 

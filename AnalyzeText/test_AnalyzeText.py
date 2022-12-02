@@ -1,8 +1,9 @@
 from unittest import TestCase
 from AnalyzeText import AnalyzeText
 from wordfreq import zipf_frequency
+from json import load
 
-tests = [
+tests_filter = [
     {
         "test": "Sir, I protest. I am not a merry man!",
         "result": ['sir', 'protest', 'merry', 'man']
@@ -20,12 +21,20 @@ c1_words = ["audible", "asset"]
 class TestAnalyzeText(TestCase):
 
     def test_filtering(self):
-        for test in tests:
-            an = AnalyzeText(test['test'])
+        for test in tests_filter:
+            an = AnalyzeText(test['test'], path_c1_zipf='c1_zipf')
             filtered = an.get_words()
             print(filtered)
             self.assertEqual(sorted(test['result']), sorted(filtered))
             print(f'zipf: {an.get_word_frequency()}')
+
+    def test_sentences_from_text(self):
+        with open(r'data for tests\tests sentences', 'r', encoding='utf8') as f:
+            tests_sentences = load(f)
+            print(tests_sentences)
+            print(type(tests_sentences))
+            for test in tests_sentences:
+                an = AnalyzeText(test['test'], path_c1_zipf='c1_zipf')
 
     def test_c1_freq(self):
         an = AnalyzeText()
