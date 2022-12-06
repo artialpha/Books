@@ -3,7 +3,7 @@ import nltk
 import numpy as np
 import requests
 from wordfreq import zipf_frequency  # https://pypi.org/project/wordfreq/
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from PyPDF2 import PdfReader
 from pickle import dump, load
@@ -11,6 +11,8 @@ from os.path import exists
 from os import listdir
 from bs4 import BeautifulSoup
 from collections import namedtuple
+import syntok.segmenter as segmenter
+
 nltk.download("stopwords")
 
 
@@ -32,6 +34,7 @@ class AnalyzeText:
         self.get_c1_zipf_ceiling()
 
     #Get rid of stop words, punctuation marks and there's no repetitions
+    #make it and frequency list (lazy)properties!
     def get_words(self):
         words = word_tokenize(self.text)
         #print(f'tokenized {words}')
@@ -54,7 +57,9 @@ class AnalyzeText:
         return ls
 
     def get_sentences_from_text(self):
-        pass
+        sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
+        sentences = sent_detector.tokenize(self.text)
+        return sentences
 
     def get_medium_c1_frequency_from_list(self):
         words = []

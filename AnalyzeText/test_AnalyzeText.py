@@ -35,6 +35,8 @@ class TestAnalyzeText(TestCase):
             print(type(tests_sentences))
             for test in tests_sentences:
                 an = AnalyzeText(test['test'], path_c1_zipf='c1_zipf')
+                for i, sent in enumerate(an.get_sentences_from_text()):
+                    print(i, sent)
 
     def test_c1_freq(self):
         an = AnalyzeText()
