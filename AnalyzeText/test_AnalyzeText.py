@@ -28,23 +28,32 @@ class TestAnalyzeText(TestCase):
             self.assertEqual(sorted(test['result']), sorted(filtered))
             print(f'zipf: {an.get_word_frequency()}')
 
-    def test_sentences_from_text(self):
-        with open(r'data for tests\tests sentences', 'r', encoding='utf8') as f:
-            tests_sentences = load(f)
-            print(tests_sentences)
-            print(type(tests_sentences))
-            for test in tests_sentences:
-                an = AnalyzeText(test['test'], path_c1_zipf='c1_zipf')
-                for i, sent in enumerate(an.get_sentences_from_text()):
-                    print(i, sent)
-
-    def test_c1_freq(self):
-        an = AnalyzeText()
-        print(f'c1 zipf ceiling: {an.c1_zipf_ceiling}')
-
-    def test_zipf(self):
-        for word in c1_words:
-            print(f"zipf of a c1 word: {zipf_frequency(word, 'en')}")
+    def test_sentences_for_word(self):
+        tests = [
+            {
+                "text": "I told Ms. Blackhole to buy a chair made of wood. She obviously ignored "
+                        "what I had asked for and bought a sofa. It drives me crazy when she "
+                        "ignores my requests. I had to go for a chair by myself. I keep the sofa "
+                        "in the basement. It is covered by a thin layer of dust. After all, Mrs. Steel "
+                        "who likes Mr. Leg who is Ms. Dog's' brother was given the chair which was "
+                        "too small for Mrs. Ball who is obese and what makes things worse her husbad "
+                        "Mr. Dog is fat too.",
+                "word": "chair",
+                "sentences": [
+                    "I told Ms. Blackhole to buy a chair made of wood",
+                    "I had to go for a chair by myself",
+                    "After all, Mrs. Steel "
+                    "who likes Mr. Leg who is Ms. Dog's' brother was given the chair which was "
+                    "too small for Mrs. Ball who is obese and what makes things worse her husbad "
+                    "Mr. Dog is fat too"
+                ]
+            }
+        ]
+        for test in tests:
+            sentences = AnalyzeText.get_sentences_for_word(test['text'], test['word'])
+            for s in zip(sentences, test['sentences']):
+                self.assertEqual(s[0], s[1])
+                print(s)
 
 
 

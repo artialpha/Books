@@ -18,6 +18,8 @@ nltk.download("stopwords")
 
 class AnalyzeText:
 
+    abbr = ["Mr", "Mrs", "Ms"]
+
     def __init__(self, text="", language='english', path_c1_zipf=r'AnalyzeText\c1_zipf'):
         self.text = text
         self.filtered_list = None
@@ -56,9 +58,48 @@ class AnalyzeText:
               self.c1_zipf_ceiling]
         return ls
 
-    def get_sentences_from_text(self):
-        sent_detector = nltk.data.load('tokenizers/punkt/english.pickle')
-        sentences = sent_detector.tokenize(self.text)
+    @staticmethod
+    def __get_indices(text, word):
+        indices = []
+        offset = 0
+        while True:
+            index = text.find(word, offset)
+            if index == -1:
+                return indices
+            indices.append(index)
+            offset = index + 1
+
+    @classmethod
+    def __find_dot(cls, text, index, side):
+        dot_id = None
+        if side == 'start':
+            dot_id = text.rfind('.', 0, index)
+        elif side == 'end':
+            dot_id = text.find('.', index + 1)
+        if dot_id != -1:
+            for a in cls.abbr:
+                chunk = text[dot_id-4:dot_id]
+                if a in chunk:
+                    dot_id = cls.__find_dot(text, dot_id, side)
+        return dot_id
+
+    @classmethod
+    def __get_dots(cls, text, indices):
+        dots = []
+        for id in indices:
+            if (start := cls.__find_dot(text, id, 'start')) == -1:
+                start = 0
+            else:
+                start += 2
+            end = cls.__find_dot(text, id, 'end')
+            dots.append((start, end))
+        return dots
+
+    @classmethod
+    def get_sentences_for_word(cls, text, word):
+        indices = cls.__get_indices(text, word)
+        dots = cls.__get_dots(text, indices)
+        sentences = [text[start:end] for start, end in dots]
         return sentences
 
     def get_medium_c1_frequency_from_list(self):
