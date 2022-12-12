@@ -38,22 +38,46 @@ class TestAnalyzeText(TestCase):
                         "who likes Mr. Leg who is Ms. Dog's' brother was given the chair which was "
                         "too small for Mrs. Ball who is obese and what makes things worse her husbad "
                         "Mr. Dog is fat too.",
-                "word": "chair",
+                "words": ["chair", "told", "for"],
                 "sentences": [
-                    "I told Ms. Blackhole to buy a chair made of wood",
-                    "I had to go for a chair by myself",
-                    "After all, Mrs. Steel "
-                    "who likes Mr. Leg who is Ms. Dog's' brother was given the chair which was "
-                    "too small for Mrs. Ball who is obese and what makes things worse her husbad "
-                    "Mr. Dog is fat too"
+                    [
+                        "I told Ms. Blackhole to buy a chair made of wood",
+                        "I had to go for a chair by myself",
+                        "After all, Mrs. Steel "
+                        "who likes Mr. Leg who is Ms. Dog's' brother was given the chair which was "
+                        "too small for Mrs. Ball who is obese and what makes things worse her husbad "
+                        "Mr. Dog is fat too"
+                    ],
+                    ["I told Ms. Blackhole to buy a chair made of wood"],
+                    [
+                        "She obviously ignored what I had asked for and bought a sofa",
+                        "I had to go for a chair by myself",
+                        "After all, Mrs. Steel "
+                        "who likes Mr. Leg who is Ms. Dog's' brother was given the chair which was "
+                        "too small for Mrs. Ball who is obese and what makes things worse her husbad "
+                        "Mr. Dog is fat too"
+                    ]
+                ]
+            },
+            {
+                "text": "I'd like to eat something sweet. "
+                        "I think I will buy ice cream! But unlucky - I have run out of money!",
+                "words": [
+                    "eat", "ice", "run"
+                ],
+                "sentences": [
+                    ["I'd like to eat something sweet"], ["I think I will buy ice cream"],
+                     ["But unlucky - I have run out of money"]
                 ]
             }
         ]
         for test in tests:
-            sentences = AnalyzeText.get_sentences_for_word(test['text'], test['word'])
-            for s in zip(sentences, test['sentences']):
-                self.assertEqual(s[0], s[1])
-                print(s)
+            for word, sentences in zip(test['words'], test['sentences']):
+                result = AnalyzeText.get_sentences_for_word(test['text'], word)
+                print(f"result: {result}")
+                print(f"sentenes from test: {sentences}")
+                self.assertEqual(result, sentences)
+
 
 
 

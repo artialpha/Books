@@ -86,12 +86,12 @@ class AnalyzeText:
     @classmethod
     def __get_dots(cls, text, indices):
         dots = []
-        for id in indices:
-            if (start := cls.__find_dot(text, id, 'start')) == -1:
+        for index in indices:
+            if (start := cls.__find_dot(text, index, 'start')) == -1:
                 start = 0
             else:
                 start += 2
-            end = cls.__find_dot(text, id, 'end')
+            end = cls.__find_dot(text, index, 'end')
             dots.append((start, end))
         return dots
 
@@ -167,7 +167,5 @@ class AnalyzeText:
             print(f'c1 in get: {self.c1_zipf_ceiling}')
             with open(r'AnalyzeText\c1_zipf', 'wb+') as f:
                 dump(self.c1_zipf_ceiling, f)
-
-
 
 
