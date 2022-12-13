@@ -72,10 +72,14 @@ class AnalyzeText:
     @classmethod
     def __find_dot(cls, text, index, side):
         dot_id = None
+        endings = ['!', '?', '.', '...']
+
         if side == 'start':
-            dot_id = text.rfind('.', 0, index)
+            ls = [v for p in endings if (v := text.rfind(p, 0, index)) != -1]
+            dot_id = max(ls) if ls else -1
         elif side == 'end':
-            dot_id = text.find('.', index + 1)
+            ls = [v for p in endings if (v := text.find(p, index + 1)) != -1]
+            dot_id = min(ls) if ls else -1
         if dot_id != -1:
             for a in cls.abbr:
                 chunk = text[dot_id-4:dot_id]
@@ -99,7 +103,7 @@ class AnalyzeText:
     def get_sentences_for_word(cls, text, word):
         indices = cls.__get_indices(text, word)
         dots = cls.__get_dots(text, indices)
-        sentences = [text[start:end] for start, end in dots]
+        sentences = [text[start:end+1] for start, end in dots]
         return sentences
 
     def get_medium_c1_frequency_from_list(self):
