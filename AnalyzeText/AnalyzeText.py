@@ -1,4 +1,4 @@
-from string import punctuation
+from string import punctuation, ascii_letters
 import nltk
 import numpy as np
 import requests
@@ -11,7 +11,7 @@ from os.path import exists
 from os import listdir
 from bs4 import BeautifulSoup
 from collections import namedtuple
-import syntok.segmenter as segmenter
+from lemminflect import getAllLemmas, getAllInflections # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
 
 nltk.download("stopwords")
 
@@ -62,11 +62,14 @@ class AnalyzeText:
     def __get_indices(text, word):
         indices = []
         offset = 0
+        word = word
         while True:
             index = text.find(word, offset)
             if index == -1:
                 return indices
-            indices.append(index)
+
+            if text[index-1] not in ascii_letters and text[(index + len(word))] not in ascii_letters:
+                indices.append(index)
             offset = index + 1
 
     @classmethod
@@ -100,11 +103,31 @@ class AnalyzeText:
         return dots
 
     @classmethod
-    def get_sentences_for_word(cls, text, word):
-        indices = cls.__get_indices(text, word)
-        dots = cls.__get_dots(text, indices)
-        sentences = [text[start:end+1] for start, end in dots]
-        return sentences
+    def get_sentences_for_word(cls, text, word, *,  use_inflections=False, use_lemma=False):
+        # noinspection PyShadowingNames
+        def get_sentences(text, word):
+            indices = cls.__get_indices(text, word)
+            dots = cls.__get_dots(text, indices)
+            sentences = [text[start:end+1] for start, end in dots]
+            return sentences
+
+        if use_lemma:
+            lemma = getAllLemmas(word)
+            words = [lem[0] for lem in lemma.values()]
+            words.append(word)
+            #print(f'word: {word}, lemma: {lemma}')
+            #print(f'all words to look for: {words}')
+            sentences = []
+            for w in words:
+                s = get_sentences(text, w)
+                sentences.extend(s)
+            return sentences
+
+        if use_inflections:
+            inflections = {inf[0] for inf in getAllInflections(word).values()}
+            print(f'{word}: {inflections}')
+
+        return get_sentences(text, word)
 
     def get_medium_c1_frequency_from_list(self):
         words = []
