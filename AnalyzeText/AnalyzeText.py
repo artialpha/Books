@@ -3,7 +3,7 @@ import nltk
 import numpy as np
 import requests
 from wordfreq import zipf_frequency  # https://pypi.org/project/wordfreq/
-from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from PyPDF2 import PdfReader
 from pickle import dump, load
@@ -11,7 +11,7 @@ from os.path import exists
 from os import listdir
 from bs4 import BeautifulSoup
 from collections import namedtuple
-from lemminflect import getAllLemmas, getAllInflections # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
+from lemminflect import getAllLemmas, getAllInflections  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
 
 nltk.download("stopwords")
 
@@ -33,6 +33,7 @@ class AnalyzeText:
 
         self.path_c1_zipf = path_c1_zipf
         self.c1_zipf_ceiling = None
+        self.c1_zipf_floor = 0
         self.get_c1_zipf_ceiling()
 
     #Get rid of stop words, punctuation marks and there's no repetitions
@@ -111,23 +112,23 @@ class AnalyzeText:
             sentences = [text[start:end+1] for start, end in dots]
             return sentences
 
+        sentences = get_sentences(text, word)
+
         if use_lemma:
             lemma = getAllLemmas(word)
-            words = [lem[0] for lem in lemma.values()]
-            words.append(word)
-            #print(f'word: {word}, lemma: {lemma}')
-            #print(f'all words to look for: {words}')
-            sentences = []
+            words = {lem[0] for lem in lemma.values()}
+            print(f'word: {word}, lemma: {lemma}')
+            lemma_sentences = []
             for w in words:
                 s = get_sentences(text, w)
-                sentences.extend(s)
-            return sentences
+                lemma_sentences.extend(s)
+            sentences.extend(lemma_sentences)
 
         if use_inflections:
             inflections = {inf[0] for inf in getAllInflections(word).values()}
-            print(f'{word}: {inflections}')
+            #print(f'{word}: {inflections}')
 
-        return get_sentences(text, word)
+        return sentences
 
     def get_medium_c1_frequency_from_list(self):
         words = []

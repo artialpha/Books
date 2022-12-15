@@ -125,14 +125,63 @@ class TestAnalyzeText(TestCase):
                 # one word - one sentence
                 # sentences that end only with various punctuation marks
                 # USE lemma, No inflections
+                # in 'words' that I look for i have an inflected word and I want a sentence that contains a lemma
+                # eg
+                # told - inflected, tell - lemma
                 "text": "I'm going to tell her off for what she has done to my car. "
-                        "She will go to any lengths to avoid the responsibility for the damaged cause! ",
+                        "She will go to any lengths to avoid the responsibility for the damaged cause! "
+                        "I don't care that she has run out of money and that she has debts to pay back! "
+                        "Why didn't she keep her hands off my car then? "
+                        "She should learn how to use public transport! ",
                 "words": [
-                    "told", "gone"
+                    "told", "gone", 'ran', 'kept', "used"
                 ],
                 "sentences": [
+                    # inflected: told | lemma: tell
                     ["I'm going to tell her off for what she has done to my car."],
-                    ["She will go to any lengths to avoid the responsibility for the damaged cause!"]
+
+                    # inflected: gone | lemma: go
+                    ["She will go to any lengths to avoid the responsibility for the damaged cause!"],
+
+                    # inflected: ran | lemma: run
+                    ["I don't care that she has run out of money and that she has debts to pay back!"],
+
+                    # inflected: kept | lemma: keep
+                    ["Why didn't she keep her hands off my car then?"],
+
+                    # inflected: used | lemma: use
+                    ["She should learn how to use public transport!"],
+                ],
+                "lemma": True,
+                "inflections": False
+            },
+            {
+                # one word - one sentence
+                # sentences that end only with various punctuation marks
+                # USE lemma, No inflections
+                # in 'words' that I look for i have an inflected word
+                # I want sentences that contain both a lemma and that word
+                # eg
+                # word that I have in list: told
+                # inflected: told, lemma: tell
+                # so I look for 'told' and 'tell'
+                "text": "I told you not to touch a hot pot! "
+                        "Why are you never listening to what I tell you? "
+                        "You may have burned your hand! "
+                        "As a punishment - you are forbidden to play computer games for a week. ",
+                "words": [
+                    "told", "burned", "played"
+                ],
+                "sentences": [
+                    # word: inflected(told); sentences with: lemma(tell) + inflected(told)
+                    #
+                    ["I told you not to touch a hot pot!", "Why are you never listening to what I tell you?"],
+
+                    # word: inflected(burned); sentences with: inflected(burned)
+                    ["You may have burned your hand!"],
+
+                    # word: inflected(played); sentences with: lemma(play)
+                    ["As a punishment - you are forbidden to play computer games for a week."]
                 ],
                 "lemma": True,
                 "inflections": False
@@ -146,6 +195,9 @@ class TestAnalyzeText(TestCase):
                 if test['lemma']:
                     result = AnalyzeText.get_sentences_for_word(test['text'], word, use_lemma=True)
                     self.assertEqual(sentences, result)
+                if test['inflections']:
+                    result = AnalyzeText.get_sentences_for_word(test['text'], word, use_inflections=True)
+                    #self.assertEqual(sentences, result)
 
 
 
