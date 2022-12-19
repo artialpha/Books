@@ -185,6 +185,26 @@ class TestAnalyzeText(TestCase):
                 ],
                 "lemma": True,
                 "inflections": False
+            },
+            {
+                # one word - one sentence
+                # sentences that end only with various punctuation marks
+                # No lemma, USE inflections
+                # in words I have a lemma (eg: 'annoy')
+                # and I look for sentences with inflections (eg. 'annoying')
+                "text": "You are being so annoying today, Michael. "
+                        "Only after doing your homework can you play with puppies. "
+                        "Unless your behaviour improves, you won't be allowed to go out with your friends. ",
+                "words": [
+                    "annoy", "puppy", "improve"
+                ],
+                "sentences": [
+                    ["You are being so annoying today, Michael."],
+                    ["Only after doing your homework can you play with puppies."],
+                    ["Unless your behaviour improves, you won't be allowed to go out with your friends."]
+                ],
+                "lemma": False,
+                "inflections": True
             }
         ]
         for test in tests:
@@ -197,7 +217,7 @@ class TestAnalyzeText(TestCase):
                     self.assertEqual(sentences, result)
                 if test['inflections']:
                     result = AnalyzeText.get_sentences_for_word(test['text'], word, use_inflections=True)
-                    #self.assertEqual(sentences, result)
+                    self.assertEqual(sentences, result)
 
 
 

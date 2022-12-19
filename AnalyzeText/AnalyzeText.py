@@ -113,20 +113,22 @@ class AnalyzeText:
             return sentences
 
         sentences = get_sentences(text, word)
-
+        words = set()
         if use_lemma:
             lemma = getAllLemmas(word)
-            words = {lem[0] for lem in lemma.values()}
-            print(f'word: {word}, lemma: {lemma}')
-            lemma_sentences = []
-            for w in words:
-                s = get_sentences(text, w)
-                lemma_sentences.extend(s)
-            sentences.extend(lemma_sentences)
+            words = words | {lem[0] for lem in lemma.values()}
+            # print(f'word: {word}, lemma: {lemma}')
 
         if use_inflections:
             inflections = {inf[0] for inf in getAllInflections(word).values()}
-            #print(f'{word}: {inflections}')
+            words = words | inflections
+            print(f'{word}: {inflections}')
+
+        temp = []
+        for w in words:
+            s = get_sentences(text, w)
+            temp.extend(s)
+        sentences.extend(temp)
 
         return sentences
 
