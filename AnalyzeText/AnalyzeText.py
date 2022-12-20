@@ -114,23 +114,26 @@ class AnalyzeText:
 
         sentences = get_sentences(text, word)
         words = set()
+        words.add(word)
         if use_lemma:
             lemma = getAllLemmas(word)
             words = words | {lem[0] for lem in lemma.values()}
-            # print(f'word: {word}, lemma: {lemma}')
+            print(f'LEMMA: word: {word}, lemma: {lemma}')
 
         if use_inflections:
-            inflections = {inf[0] for inf in getAllInflections(word).values()}
-            words = words | inflections
-            print(f'{word}: {inflections}')
+            for w in words:
+                inflections = {inf[0] for inf in getAllInflections(w).values()}
+                words = words | inflections
+            print(f'INFLECTIONS: {word}: {inflections}')
 
+        print(f'all words: {words}')
         temp = []
         for w in words:
             s = get_sentences(text, w)
             temp.extend(s)
         sentences.extend(temp)
 
-        return sentences
+        return set(sentences)
 
     def get_medium_c1_frequency_from_list(self):
         words = []

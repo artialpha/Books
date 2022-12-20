@@ -205,19 +205,39 @@ class TestAnalyzeText(TestCase):
                 ],
                 "lemma": False,
                 "inflections": True
+            },
+            {
+                # one word - one sentence
+                # sentences that end only with various punctuation marks
+                # No lemma, USE inflections
+                "text": "I keep my grandmother in memory. "
+                        "She was an actor and she performed many times on a stage. ",
+                "words": [
+                    "keeps", "performing"
+                ],
+                "sentences": [
+                    ["I keep my grandmother in memory."],
+                    ["She was an actor and she performed many times on a stage."],
+                ],
+                "lemma": True,
+                "inflections": True
             }
         ]
         for test in tests:
             for word, sentences in zip(test['words'], test['sentences']):
                 if not test['lemma'] and not test['inflections']:
                     result = AnalyzeText.get_sentences_for_word(test['text'], word)
-                    self.assertEqual(sentences, result)
-                if test['lemma']:
+                    self.assertEqual(set(sentences), result)
+                if test['lemma'] and not test['inflections']:
                     result = AnalyzeText.get_sentences_for_word(test['text'], word, use_lemma=True)
-                    self.assertEqual(sentences, result)
-                if test['inflections']:
+                    self.assertEqual(set(sentences), result)
+                if test['inflections'] and not test['lemma']:
                     result = AnalyzeText.get_sentences_for_word(test['text'], word, use_inflections=True)
-                    self.assertEqual(sentences, result)
+                    self.assertEqual(set(sentences), result)
+                if test['lemma'] and test['inflections']:
+                    result = AnalyzeText.get_sentences_for_word(test['text'], word,
+                                                                use_inflections=True, use_lemma=True)
+                    self.assertEqual(set(sentences), result)
 
 
 
