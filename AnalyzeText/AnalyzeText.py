@@ -65,7 +65,7 @@ class AnalyzeText:
         offset = 0
         word = word
         while True:
-            index = text.find(word, offset)
+            index = text.lower().find(word, offset)
             if index == -1:
                 return indices
 
@@ -118,13 +118,13 @@ class AnalyzeText:
         if use_lemma:
             lemma = getAllLemmas(word)
             words = words | {lem[0] for lem in lemma.values()}
-            print(f'LEMMA: word: {word}, lemma: {lemma}')
+            # print(f'LEMMA: word: {word}, lemma: {lemma}')
 
         if use_inflections:
             for w in words:
                 inflections = {inf[0] for inf in getAllInflections(w).values()}
                 words = words | inflections
-            print(f'INFLECTIONS: {word}: {inflections}')
+            # print(f'INFLECTIONS: {word}: {inflections}')
 
         print(f'all words: {words}')
         temp = []

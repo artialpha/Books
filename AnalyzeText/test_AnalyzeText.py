@@ -207,17 +207,23 @@ class TestAnalyzeText(TestCase):
                 "inflections": True
             },
             {
-                # one word - one sentence
+                # one word - multiple sentences
                 # sentences that end only with various punctuation marks
-                # No lemma, USE inflections
+                # USE lemma, USE inflections
                 "text": "I keep my grandmother in memory. "
-                        "She was an actor and she performed many times on a stage. ",
+                        "She was an actor and she performed many times on a stage. "
+                        "I am buying a new car next week. "
+                        "The old one was bought by a friend of mine. "
+                        "Selling a car crossed my mind as well. "
+                        "I think I will sell it if I am given a good offer. ",
                 "words": [
-                    "keeps", "performing"
+                    "keeps", "performing", 'buy', 'sold'
                 ],
                 "sentences": [
                     ["I keep my grandmother in memory."],
                     ["She was an actor and she performed many times on a stage."],
+                    ["I am buying a new car next week.", "The old one was bought by a friend of mine."],
+                    ['Selling a car crossed my mind as well.', 'I think I will sell it if I am given a good offer.']
                 ],
                 "lemma": True,
                 "inflections": True
@@ -239,6 +245,44 @@ class TestAnalyzeText(TestCase):
                                                                 use_inflections=True, use_lemma=True)
                     self.assertEqual(set(sentences), result)
 
+    def test_sentences_for_word_real_texts(self):
+        tests = [
+            {
+                # https://www.gutenberg.org/cache/epub/69587/pg69587.txt
+                "text": "Of the human events in the lives of all the Disciples and Apostles—the former, "
+                        "the first followers of the Living Visible Christ; the latter, evangelists, "
+                        "who later became followers—very little, almost nothing, is told. "
+                        "One finds some of the early followers first with John, the Baptist, "
+                        "on the Dead Sea at Jordan Ford; then with Christ in Galilee, then after the Crucifixion, "
+                        "in Jerusalem, in Antioch, in Babylonia, in Rome, "
+                        "in the cities of the Roman Road in Asia Minor, "
+                        "in Greece, in Thrace, in Macedonia. Connected narrative of their movements, "
+                        "there is none except a few chapters in the Acts on Paul’s travels from Damascus to Rome; "
+                        "and even in this, there are long gaps. Paul speaks of hopes to go to Spain. Did he go?",
+                "words": [
+                    "tell", "even", "city"
+                ],
+                "sentences": [
+                    # look for tell and i find "told" in a sentence
+                    ["Of the human events in the lives of all the Disciples and Apostles—the former, "
+                     "the first followers of the Living Visible Christ; the latter, evangelists, "
+                     "who later became followers—very little, almost nothing, is told."],
+                    # even
+                    ["Connected narrative of their movements, there is none except a few chapters "
+                     "in the Acts on Paul’s travels from Damascus to Rome; and even in this, there are long gaps."],
+                    # I look for city in a sentence (there is "cities")
+                    ["One finds some of the early followers first with John, "
+                     "the Baptist, on the Dead Sea at Jordan Ford; then with Christ in Galilee, "
+                     "then after the Crucifixion, in Jerusalem, in Antioch, in Babylonia, in Rome, "
+                     "in the cities of the Roman Road in Asia Minor, in Greece, in Thrace, in Macedonia."]
+                ]
+            }
+        ]
 
+        for test in tests:
+            for word, sentences in zip(test['words'], test['sentences']):
+                result = AnalyzeText.get_sentences_for_word(test['text'], word,
+                                                            use_inflections=True, use_lemma=True)
+                self.assertEqual(set(sentences), result)
 
 
