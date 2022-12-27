@@ -3,16 +3,6 @@ from AnalyzeText import AnalyzeText
 from wordfreq import zipf_frequency
 from json import load
 
-tests_filter = [
-    {
-        "test": "Sir, I protest. I am not a merry man!",
-        "result": ['sir', 'protest', 'merry', 'man']
-    },
-    {
-        "test": "Hello? Hello? Hello? It is you. It's a miracle",
-        "result": ["hello", "miracle"]
-    },
-]
 
 c1_words = ["audible", "asset"]
 
@@ -21,12 +11,30 @@ c1_words = ["audible", "asset"]
 class TestAnalyzeText(TestCase):
 
     def test_filtering(self):
+        tests_filter = [
+            {
+                "test": "Sir, I protest. I am not a merry man!",
+                "result": ['sir', 'protest', 'merry', 'man']
+            },
+            {
+                "test": "Hello? Hello? Hello? It is you. It's a miracle",
+                "result": ["hello", "miracle"]
+            },
+            {
+                "test": "I have referred to youth seeking light, where many of the old school accuse them "
+                "of thoughtlessly seeking only pleasure. I consider this a libel on modern youth.",
+                "result": ["referred", 'youth', 'seeking', 'light', 'many', 'old', 'school',
+                           'accuse', 'thoughtlessly', 'pleasure', 'consider', 'libel', 'modern']
+            }
+        ]
+
         for test in tests_filter:
             an = AnalyzeText(test['test'], path_c1_zipf='c1_zipf')
-            filtered = an.get_words()
+            #an.get_words()
+            filtered = an.filtered_list
             print(filtered)
             self.assertEqual(sorted(test['result']), sorted(filtered))
-            print(f'zipf: {an.get_word_frequency()}')
+            #print(f'zipf: {an.get_word_frequency()}')
 
     def test_sentences_for_word(self):
         tests = [
