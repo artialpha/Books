@@ -10,7 +10,6 @@ from pickle import dump, load
 from os.path import exists
 from os import listdir
 from bs4 import BeautifulSoup
-from collections import namedtuple
 from lemminflect import getAllLemmas, getAllInflections  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
 
 nltk.download("stopwords")
@@ -35,6 +34,8 @@ class AnalyzeText:
         self._c1_zipf_ceiling = None
         self.c1_zipf_floor = 0
 
+
+
     @property
     def filtered_list(self):
         if not self._filtered_list:
@@ -43,6 +44,10 @@ class AnalyzeText:
                                         not in self.stop_words and word not in punctuation})
         return self._filtered_list
 
+    @filtered_list.setter
+    def filtered_list(self, value):
+        raise AttributeError("YOU CAN'T set filtered list - it can only be obtained from a text!")
+
     @property
     def frequency_list(self):
         if not self._frequency_list:
@@ -50,6 +55,10 @@ class AnalyzeText:
             self.median = np.median(self._frequency_list)
             self.mean = np.mean(self._frequency_list)
         return self._frequency_list
+
+    @frequency_list.setter
+    def frequency_list(self, value):
+        raise AttributeError("YOU CAN'T set frequency list - it can only be obtained from a text!")
 
     @property
     def c1_zipf_ceiling(self):
@@ -70,55 +79,77 @@ class AnalyzeText:
                     dump(self._c1_zipf_ceiling, f)
         return self._c1_zipf_ceiling
 
-    def get_medium_c1_frequency_from_list(self):
-        words = []
-        if exists(r"AnalyzeText\word lists\c1 list 1"):
-            with open(r"AnalyzeText\word lists\c1 list 1", "rb") as file:
-                words = load(file)
-                print("I OPEN A FILE WITH c1 words - LIST")
-                print(f'words: {words}')
+    @c1_zipf_ceiling.setter
+    def c1_zipf_ceiling(self, value):
+        if isinstance(value, int) or isinstance(value, float):
+            self._c1_zipf_ceiling = value
         else:
-            reader = PdfReader(r"AnalyzeText\word lists\c1.pdf")
-            for page in reader.pages:
-                for line in page.extract_text().splitlines():
-                    if line.count("/") == 2:
-                        line = line.split()
-                        if len(line) == 1 or not line[1].isascii():
-                            words.append(line[0])
-            with open(r"AnalyzeText\word lists\c1 list 1", "wb+") as file:
-                dump(words, file)
-        frequencies = np.array([zipf_frequency(word, self.language[:2]) for word in words])
-        median = np.median(frequencies).item()
-        print(f'Median from list:\n'
-              f'median: {median}')
-        return median
+            raise ValueError("c1_zipf_ceiling must either int or float")
+
+    def get_medium_c1_frequency_from_list(self):
+        if exists(r"AnalyzeText\word lists\median from c1 list pdf"):
+            with open(r"AnalyzeText\word lists\median from c1 list pdf", 'rb') as file:
+                median = load(file)
+                return median
+        else:
+            words = []
+            if exists(r"AnalyzeText\word lists\c1 list from pdf"):
+                with open(r"AnalyzeText\word lists\c1 list from pdf", "rb") as file:
+                    words = load(file)
+                    print("I OPEN A FILE WITH c1 words - LIST")
+                    print(f'words: {words}')
+            else:
+                reader = PdfReader(r"AnalyzeText\word lists\c1.pdf")
+                for page in reader.pages:
+                    for line in page.extract_text().splitlines():
+                        if line.count("/") == 2:
+                            line = line.split()
+                            if len(line) == 1 or not line[1].isascii():
+                                words.append(line[0])
+                with open(r"AnalyzeText\word lists\c1 list from pdf", "wb+") as file:
+                    dump(words, file)
+            frequencies = np.array([zipf_frequency(word, self.language[:2]) for word in words])
+            median = np.median(frequencies).item()
+            print(f'Median from list:\n'
+                  f'median: {median}')
+            with open(r"AnalyzeText\word lists\median from c1 list pdf", "wb+") as file:
+                dump(median, file)
+            return median
 
     def get_medium_c1_frequency_from_website(self):
         # http://www.wordcyclopedia.com/english/c1
-        words = []
-        if exists(r"AnalyzeText\word lists\c1 list 2"):
-            with open(r"C:AnalyzeText\word lists\c1 list 2", "rb") as file:
-                words = load(file)
-                print("I OPEN A FILE WITH c1 words - WEBSITE")
-                print(f'words: {words}')
+
+        if exists(r"AnalyzeText\word lists\median from c1 list website"):
+            with open(r"AnalyzeText\word lists\median from c1 list website", 'rb') as file:
+                median = load(file)
+                return median
         else:
-            url = "http://www.wordcyclopedia.com/english/c1"
-            response = requests.get(url)
-            soup = BeautifulSoup(response.content, "html.parser")
-            elements = soup.find_all("a", class_="word")
-            for word in elements:
-                print(word.text)
-                words.append(word.text)
-            with open(r"AnalyzeText\word lists\c1 list 2", "wb+") as file:
-                dump(words, file)
-        frequencies = np.array([zipf_frequency(word, self.language[:2]) for word in words])
-        median = np.median(frequencies).item()
-        print(f'MM from website:\n'
-              f'median: {median}')
-        return median
+            words = []
+            if exists(r"AnalyzeText\word lists\c1 list from website"):
+                with open(r"C:AnalyzeText\word lists\c1 list from website", "rb") as file:
+                    words = load(file)
+                    print("I OPEN A FILE WITH c1 words - WEBSITE")
+                    print(f'words: {words}')
+            else:
+                url = "http://www.wordcyclopedia.com/english/c1"
+                response = requests.get(url)
+                soup = BeautifulSoup(response.content, "html.parser")
+                elements = soup.find_all("a", class_="word")
+                for word in elements:
+                    #print(word.text)
+                    words.append(word.text)
+                with open(r"AnalyzeText\word lists\c1 list from website", "wb+") as file:
+                    dump(words, file)
+            frequencies = np.array([zipf_frequency(word, self.language[:2]) for word in words])
+            median = np.median(frequencies).item()
+            print(f'MM from website:\n'
+                  f'median: {median}')
+            with open(r"AnalyzeText\word lists\median from c1 list website", 'wb+') as file:
+                dump(median, file)
+            return median
 
     def get_c1_words_from_text(self):
-        print(f'max zip: {self.c1_zipf_ceiling}')
+        print(f'max zipf: {self.c1_zipf_ceiling}')
         ls = [(word, zipf) for word in self.filtered_list
               if self.c1_zipf_floor < (zipf := zipf_frequency(word, self.language[:2])) < self.c1_zipf_ceiling]
         return ls
