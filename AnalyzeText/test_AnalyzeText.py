@@ -11,24 +11,45 @@ c1_words = ["audible", "asset"]
 
 # noinspection PyCallingNonCallable
 class TestAnalyzeTextZIPF(TestCase):
-    def test_c1_zipf_ceiling(self):
-        pass
+    def setUp(self):
+        print('setup before a test!!!')
 
-    def test_get_median_from_list(self):
-        an = AnalyzeText()
-        os.chdir('..')  # move up one directory
-        print(f'list of files: {listdir()}')
-        pdf_file_exist = exists(r"AnalyzeText\word lists\c1.pdf")
-        self.assertTrue(pdf_file_exist, 'list with c1 words does not exist!')
-
-        '''
-            I want to mak sure that a function creates these files
-            so if these files exist - at first I remove them
-        '''
+        os.chdir('..')
+        if exists(r"AnalyzeText\c1_zipf"):
+            os.remove(r'AnalyzeText\c1_zipf')
         if exists(r"AnalyzeText\word lists\c1 list from pdf"):
             os.remove(r'AnalyzeText\word lists\c1 list from pdf')
         if exists(r"AnalyzeText\word lists\median from c1 list pdf"):
             os.remove(r'AnalyzeText\word lists\median from c1 list pdf')
+        if exists(r"AnalyzeText\word lists\c1 list from website"):
+            os.remove(r'AnalyzeText\word lists\c1 list from website')
+        if exists(r"AnalyzeText\word lists\median from c1 list website"):
+            os.remove(r'AnalyzeText\word lists\median from c1 list website')
+
+    def test_c1_zipf_ceiling(self):
+        an = AnalyzeText()
+
+        c1_zipf_ceiling = an.c1_zipf_ceiling
+        self.assertEqual(4, c1_zipf_ceiling)
+
+        file_with_c1_zipf_ceiling = exists(r"AnalyzeText\c1_zipf")
+        self.assertTrue(file_with_c1_zipf_ceiling)
+
+        words_from_c1_list = exists(r"AnalyzeText\word lists\c1 list from pdf")
+        self.assertTrue(words_from_c1_list, 'file with words from a c1 list does not exist!')
+        median_from_c1_list = exists(r"AnalyzeText\word lists\median from c1 list pdf")
+        self.assertTrue(median_from_c1_list, 'file with median from a c1 list does not exist!')
+
+        words_from_c1_list = exists(r"AnalyzeText\word lists\c1 list from website")
+        self.assertTrue(words_from_c1_list, 'file with words from a c1 list does not exist!')
+        median_from_c1_list = exists(r"AnalyzeText\word lists\median from c1 list website")
+        self.assertTrue(median_from_c1_list, 'file with median from a c1 list does not exist!')
+
+    def test_get_median_from_list(self):
+        an = AnalyzeText()
+        print(f'list of files: {listdir()}')
+        pdf_file_exist = exists(r"AnalyzeText\word lists\c1.pdf")
+        self.assertTrue(pdf_file_exist, 'list with c1 words does not exist!')
 
         median = an.get_medium_c1_frequency_from_list()
         print(f'median returned by a function: {median}')
@@ -46,17 +67,7 @@ class TestAnalyzeTextZIPF(TestCase):
 
     def test_get_medium_from_website(self):
         an = AnalyzeText()
-        os.chdir('..')  # move up one directory
         print(f'list of files: {listdir()}')
-
-        '''
-            I want to mak sure that a function creates these files
-            so if these files exist - at first I remove them
-        '''
-        if exists(r"AnalyzeText\word lists\c1 list from website"):
-            os.remove(r'AnalyzeText\word lists\c1 list from website')
-        if exists(r"AnalyzeText\word lists\median from c1 list website"):
-            os.remove(r'AnalyzeText\word lists\median from c1 list website')
 
         median = an.get_medium_c1_frequency_from_website()
         print(f'median returned by a function: {median}')
