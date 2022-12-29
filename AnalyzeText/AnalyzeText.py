@@ -34,8 +34,6 @@ class AnalyzeText:
         self._c1_zipf_ceiling = None
         self.c1_zipf_floor = 0
 
-
-
     @property
     def filtered_list(self):
         if not self._filtered_list:
@@ -199,7 +197,7 @@ class AnalyzeText:
         return dots
 
     @classmethod
-    def get_sentences_for_word(cls, text, word, *,  use_inflections=False, use_lemma=False):
+    def get_sentences_for_word(cls, text, word, *, use_inflections=False, use_lemma=False):
         # noinspection PyShadowingNames
         def get_sentences(text, word):
             indices = cls.__get_indices(text, word)
@@ -229,3 +227,10 @@ class AnalyzeText:
         sentences.extend(temp)
 
         return set(sentences)
+
+    def get_sentences_for_filtered_words(self, use_inflections=False, use_lemma=False):
+        sentences = dict()
+        for word in self.filtered_list:
+            temp = self.get_sentences_for_word(self.text, word, use_inflections=use_inflections, use_lemma=use_lemma)
+            sentences[word] = temp
+        return sentences
