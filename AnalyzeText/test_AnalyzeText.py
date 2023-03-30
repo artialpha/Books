@@ -13,7 +13,11 @@ c1_words = ["audible", "asset"]
 class TestAnalyzeTextZIPF(TestCase):
     def setUp(self):
         print('setup before a test!!!')
+        print(f'in setup: {os.listdir()}. getcwd: {os.getcwd()}')
 
+        '''
+        remove everything to make sure that I will get median even if those files do not exist
+        '''
         os.chdir('..')
         if exists(r"AnalyzeText\c1_zipf"):
             os.remove(r'AnalyzeText\c1_zipf')
@@ -25,6 +29,11 @@ class TestAnalyzeTextZIPF(TestCase):
             os.remove(r'AnalyzeText\word lists\c1 list from website')
         if exists(r"AnalyzeText\word lists\median from c1 list website"):
             os.remove(r'AnalyzeText\word lists\median from c1 list website')
+
+    def tearDown(self):
+        print('tear down after a test')
+        os.chdir(r'AnalyzeText')
+        print(f'{os.listdir()=}')
 
     def test_c1_zipf_ceiling(self):
         an = AnalyzeText()
@@ -67,7 +76,7 @@ class TestAnalyzeTextZIPF(TestCase):
 
     def test_get_medium_from_website(self):
         an = AnalyzeText()
-        print(f'list of files: {listdir()}')
+        print(f'in test: list of files: {listdir()}')
 
         median = an.get_medium_c1_frequency_from_website()
         print(f'median returned by a function: {median}')
@@ -112,6 +121,9 @@ class TestAnalyzeText(TestCase):
             print(filtered)
             self.assertEqual(sorted(test['result']), sorted(filtered))
             #print(f'zipf: {an.get_word_frequency()}')
+
+    def test_indices_for_word(self):
+        pass
 
     def test_sentences_for_word(self):
         tests = [

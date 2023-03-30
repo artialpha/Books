@@ -11,8 +11,9 @@ from os.path import exists
 from os import listdir
 from bs4 import BeautifulSoup
 from lemminflect import getAllLemmas, getAllInflections  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
-
+from urllib.request import urlretrieve
 nltk.download("stopwords")
+nltk.download('punkt')
 
 
 class AnalyzeText:
@@ -84,6 +85,7 @@ class AnalyzeText:
         else:
             raise ValueError("c1_zipf_ceiling must either int or float")
 
+    # https://www.toe.gr/pluginfile.php?file=%2F2143%2Fmod_resource%2Fcontent%2F1%2FLevel%20C1%20Word%20List.pdf
     def get_medium_c1_frequency_from_list(self):
         if exists(r"AnalyzeText\word lists\median from c1 list pdf"):
             with open(r"AnalyzeText\word lists\median from c1 list pdf", 'rb') as file:
@@ -97,6 +99,10 @@ class AnalyzeText:
                     print("I OPEN A FILE WITH c1 words - LIST")
                     print(f'words: {words}')
             else:
+                if not exists(r"AnalyzeText\word lists\c1.pdf"):
+                    url = 'https://www.toe.gr/pluginfile.php?file=%2F2143%2Fmod_resource%2' \
+                          'Fcontent%2F1%2FLevel%20C1%20Word%20List.pdf'
+                    urlretrieve(url, r"AnalyzeText\word lists\c1.pdf")
                 reader = PdfReader(r"AnalyzeText\word lists\c1.pdf")
                 for page in reader.pages:
                     for line in page.extract_text().splitlines():
