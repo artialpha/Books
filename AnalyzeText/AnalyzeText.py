@@ -159,6 +159,22 @@ class AnalyzeText:
         return ls
 
     @staticmethod
+    def get_word_positions(text, word):
+        positions = []
+        offset = 0
+        text = text.lower()
+
+        while True:
+            index = text.find(word, offset)
+
+            if index == -1:
+                return positions
+
+            else:
+                positions.append(index)
+                offset = index + 1
+
+    @staticmethod
     def __get_indices(text, word):
         indices = []
         offset = 0

@@ -1,0 +1,12 @@
+{
+    "texts": [
+                {
+                    "file_name": "Forgetting",
+                    "words": ["forget"]
+                },
+                {
+                    "file_name": "Language",
+                    "words": ["language"]
+                }
+           ]
+}

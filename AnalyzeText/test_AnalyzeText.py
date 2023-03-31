@@ -4,6 +4,7 @@ from AnalyzeText import AnalyzeText
 from os.path import exists
 from os import listdir, chdir, getcwd
 from pickle import load
+from json import load as json_load
 
 
 c1_words = ["audible", "asset"]
@@ -123,7 +124,21 @@ class TestAnalyzeText(TestCase):
             #print(f'zipf: {an.get_word_frequency()}')
 
     def test_indices_for_word(self):
-        pass
+        with open(r"data for tests\texts\tests", 'r') as test_file:
+            tests = json_load(test_file)
+
+            for test in tests['texts']:
+                with open(fr"data for tests\texts\{test['file_name']}", 'r') as text_file:
+                    text = text_file.read()
+
+                    for word in test['words']:
+                        positions = AnalyzeText.get_word_positions(text, word)
+                        word_len = len(word)
+
+                        for p in positions:
+                            self.assertEqual(word, text[p:p+word_len].lower())
+
+
 
     def test_sentences_for_word(self):
         tests = [
