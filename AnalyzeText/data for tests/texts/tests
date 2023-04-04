@@ -2,11 +2,18 @@
     "texts": [
                 {
                     "file_name": "Forgetting",
-                    "words": ["forget"]
+                    "words": ["forget"],
+                    "context_around_word": {
+
+                                            }
+
                 },
                 {
                     "file_name": "Language",
-                    "words": ["language"]
+                    "words": ["language"],
+                    "context_around_word": {
+
+                                            }
                 }
            ]
 }

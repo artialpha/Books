@@ -12,6 +12,7 @@ from os import listdir
 from bs4 import BeautifulSoup
 from lemminflect import getAllLemmas, getAllInflections  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
 from urllib.request import urlretrieve
+from re import finditer, IGNORECASE
 nltk.download("stopwords")
 nltk.download('punkt')
 
@@ -160,19 +161,27 @@ class AnalyzeText:
 
     @staticmethod
     def get_word_positions(text, word):
-        positions = []
-        offset = 0
-        text = text.lower()
+        positions = finditer(fr'\b({word})\b', text, IGNORECASE)
+        return positions
 
-        while True:
-            index = text.find(word, offset)
+    @staticmethod
+    def get_context_around_index(text, index, distance=50, get_whole_word=True):
+        if get_whole_word:
+            start = end = distance
 
-            if index == -1:
-                return positions
+            if index - start > 0 and get_whole_word:
+                while text[index-start].isalnum():
+                    start -= 1
 
-            else:
-                positions.append(index)
-                offset = index + 1
+            if index + end < len(text) and get_whole_word:
+                while text[index+end].isalnum():
+                    end += 1
+
+            return f'...{text[index-start:index+end]}...'.replace('\n', '')
+        else:
+            return text[index-distance:index+distance]
+
+
 
     @staticmethod
     def __get_indices(text, word):
