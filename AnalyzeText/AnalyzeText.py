@@ -178,6 +178,7 @@ class AnalyzeText:
                     end += 1
 
             return f'...{text[index-start:index+end]}...'.replace('\n', '')
+
         else:
             return text[index-distance:index+distance]
 

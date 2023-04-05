@@ -138,12 +138,7 @@ class TestAnalyzeText(TestCase):
                             self.assertEqual(word, text[p.start():p.end()].lower())
                             print(AnalyzeText.get_context_around_index(text, p.start()))
 
-    def test_context_around_word(self):
-        with open(r"data for tests\texts\tests", 'r') as test_file:
-            tests = json_load(test_file)
 
-            for test in tests['texts']:
-                pass
 
     def test_sentences_for_word(self):
         tests = [
