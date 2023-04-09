@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 from lemminflect import getAllLemmas, getAllInflections  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
 from urllib.request import urlretrieve
 from re import finditer, IGNORECASE
+from collections import defaultdict
 nltk.download("stopwords")
 nltk.download('punkt')
 
@@ -25,6 +26,7 @@ class AnalyzeText:
         self.text = text
         self._filtered_list = None
         self._frequency_list = None
+        self._c1_list = None
         self.language = language
         self.stop_words = stopwords.words(language)
         self.stop_words.append("'s")
@@ -59,6 +61,11 @@ class AnalyzeText:
     @frequency_list.setter
     def frequency_list(self, value):
         raise AttributeError("YOU CAN'T set frequency list - it can only be obtained from a text!")
+
+    @property
+    def c1_list(self):
+        if not self._c1_list:
+            pass
 
     @property
     def c1_zipf_ceiling(self):
@@ -160,8 +167,10 @@ class AnalyzeText:
         return ls
 
     @staticmethod
-    def get_word_positions(text, word):
+    def get_word_positions(text, word, only_start=False):
         positions = finditer(fr'\b({word})\b', text, IGNORECASE)
+        if only_start:
+            positions = [p.start() for p in positions]
         return positions
 
     @staticmethod
@@ -172,15 +181,31 @@ class AnalyzeText:
             if index - start > 0 and get_whole_word:
                 while text[index-start].isalnum():
                     start -= 1
+            else:
+                start = index
 
             if index + end < len(text) and get_whole_word:
                 while text[index+end].isalnum():
                     end += 1
+            else:
+                end = ((len(text)-1) - index)
 
             return f'...{text[index-start:index+end]}...'.replace('\n', '')
 
         else:
             return text[index-distance:index+distance]
+
+    def get_words_with_context(self):
+        words_with_frequency = self.get_c1_words_from_text()
+        words = [word for (word, freq) in words_with_frequency]
+        print(f'words: {words_with_frequency}\nlen: {len(words)}')
+        words_with_context = defaultdict(list)
+        for word in words:
+            positions = self.get_word_positions(self.text, word, only_start=True)
+            for index in positions:
+                words_with_context[word].append(self.get_context_around_index(self.text, index))
+
+        return words_with_context
 
 
 
@@ -251,7 +276,7 @@ class AnalyzeText:
                 words = words | inflections
             # print(f'INFLECTIONS: {word}: {inflections}')
 
-        print(f'all words: {words}')
+        #print(f'all words: {words}')
         temp = []
         for w in words:
             s = get_sentences(text, w)
