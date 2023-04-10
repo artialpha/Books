@@ -21,14 +21,23 @@ class TestTestFromBook(TestCase):
         print(f'{listdir()}')
         with open(r'AnalyzeText\data for tests\texts\Forgetting', mode='r', encoding='utf-8') as f:
             text = f.read()
-            #print(text)
 
         an = AnalyzeText(text)
         words_with_context = an.get_words_with_context()
         print(f'{words_with_context=}')
         test = TestFromBook(words_with_context)
-        questions_list = test.create_questions_list()
+        questions_list = test.create_questions_with_answers_list()
 
         print("\nQUESTIONS: \n")
         for question in questions_list:
             print(f'{question}')
+
+    def test_create_test_file_txt(self):
+        with open(r'AnalyzeText\data for tests\texts\Forgetting', mode='r', encoding='utf-8') as f:
+            text = f.read()
+
+        an = AnalyzeText(text)
+        words_with_context = an.get_words_with_context()
+        print(f'{words_with_context=}')
+        test = TestFromBook(words_with_context)
+        test.create_test_file_with_questions_answers_txt()
