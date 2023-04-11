@@ -190,15 +190,16 @@ class AnalyzeText:
             else:
                 end = ((len(text)-1) - index)
 
-            return f'...{text[index-start:index+end]}...'.replace('\n', '')
+            return f'"...{text[index-start:index+end]}..."'.replace('\n', '')
 
         else:
             return text[index-distance:index+distance]
 
-    def get_words_with_context(self):
-        words_with_frequency = self.get_c1_words_from_text()
-        words = [word for (word, freq) in words_with_frequency]
-        print(f'words: {words_with_frequency}\nlen: {len(words)}')
+    def get_words_with_context(self, words=None):
+        if not words:
+            words_with_frequency = self.get_c1_words_from_text()
+            words = [word for (word, freq) in words_with_frequency]
+            print(f'words: {words_with_frequency}\nlen: {len(words)}')
         words_with_context = defaultdict(list)
         for word in words:
             positions = self.get_word_positions(self.text, word, only_start=True)

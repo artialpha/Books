@@ -1,7 +1,7 @@
 from random import sample, shuffle
 
 
-class TestFromBook:
+class TestFromText:
     number_of_additional_choices_in_question = 3
 
     class QuestionWithAnswer:

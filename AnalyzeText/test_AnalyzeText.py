@@ -154,8 +154,6 @@ class TestAnalyzeText(TestCase):
         remove(r'words with context list.txt')
 
 
-
-
     def test_sentences_for_word(self):
         tests = [
             {

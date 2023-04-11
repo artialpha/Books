@@ -1,11 +1,11 @@
 from unittest import TestCase
 from os import listdir, chdir
-from TestFromBook import TestFromBook
+from TestFromText import TestFromText
 from AnalyzeText import AnalyzeText
 import inspect
 
 
-class TestTestFromBook(TestCase):
+class TestTestFromText(TestCase):
 
     def setUp(self):
         chdir('..')
@@ -14,7 +14,7 @@ class TestTestFromBook(TestCase):
         words = ['dog', 'bird', 'cat', 'cow', 'bull', 'mouse', 'snake', 'crocodile', 'wolf', 'lion', 'goat', 'dragon',
                  'viper', 'sheep', 'doe', 'stag']
         for word in words:
-            abcd = TestFromBook.get_options_line(words, word)
+            abcd = TestFromText.get_options_line(words, word)
             self.assertEqual(1, abcd.count(word))
 
     def test_create_questions_list(self):
@@ -25,7 +25,7 @@ class TestTestFromBook(TestCase):
         an = AnalyzeText(text)
         words_with_context = an.get_words_with_context()
         print(f'{words_with_context=}')
-        test = TestFromBook(words_with_context)
+        test = TestFromText(words_with_context)
         questions_list = test.create_questions_with_answers_list()
 
         print("\nQUESTIONS: \n")
@@ -39,5 +39,5 @@ class TestTestFromBook(TestCase):
         an = AnalyzeText(text)
         words_with_context = an.get_words_with_context()
         print(f'{words_with_context=}')
-        test = TestFromBook(words_with_context)
+        test = TestFromText(words_with_context)
         test.create_test_file_with_questions_answers_txt()
