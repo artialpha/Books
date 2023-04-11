@@ -207,7 +207,24 @@ class AnalyzeText:
 
         return words_with_context
 
+    @staticmethod
+    def save_words(words_with_context, path='words list.txt'):
+        words = [f'{word}\n' for word in words_with_context.keys()]
+        with open(path, 'w') as file:
+            file.writelines(words)
 
+    @staticmethod
+    def save_words_and_context(words_with_context, path='words with context list.txt'):
+        words_with_context = [f'{word}: {", ".join(contexts)}\n' for word, contexts in words_with_context.items()]
+
+        with open(path, 'w') as file:
+            file.writelines(words_with_context)
+
+    @staticmethod
+    def get_words_list_from_file(path='words list.txt'):
+        with open(path, 'r') as file:
+            words = file.readlines()
+            return [word.rstrip('\n') for word in words]
 
     @staticmethod
     def __get_indices(text, word):

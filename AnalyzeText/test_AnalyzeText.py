@@ -2,9 +2,10 @@ import os
 from unittest import TestCase
 from AnalyzeText import AnalyzeText
 from os.path import exists
-from os import listdir, chdir, getcwd
+from os import listdir, chdir, getcwd, remove
 from pickle import load
 from json import load as json_load
+from collections import defaultdict
 
 
 c1_words = ["audible", "asset"]
@@ -137,6 +138,21 @@ class TestAnalyzeText(TestCase):
                         for p in positions:
                             self.assertEqual(word, text[p.start():p.end()].lower())
                             print(AnalyzeText.get_context_around_index(text, p.start()))
+
+    def test_gen(self):
+        words_with_context = defaultdict(list)
+        words_with_context['dog'].append('My dog is filthy')
+        words_with_context['cat'].append('A stray cat has to hunt birds to survive')
+        words_with_context['cow'].append('cow is a source of milk')
+        words_with_context['cow'].append('I have eaten a cow alive')
+        AnalyzeText.save_words(words_with_context)
+        AnalyzeText.save_words_and_context(words_with_context)
+
+        words = AnalyzeText.get_words_list_from_file()
+        self.assertEqual(list(words_with_context.keys()), words)
+        remove(r'words list.txt')
+        remove(r'words with context list.txt')
+
 
 
 
