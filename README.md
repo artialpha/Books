@@ -1,5 +1,4 @@
 # Books
-Programs to analyze a content of a book
+A program that helps me to learn vocabulary from a book.
 
-I wanted to create a program which will help to analyze how difficult is a book when it comes down to a vocabulary used. 
-At first I wanted to check a couple of book that are available for free - that's the reason I have written some code to get books from Project Gutenberg. 
+I read books written in English from time to time and currently my vocabulary is not advanced enough to understand everything that is written. <b>hello</b>
