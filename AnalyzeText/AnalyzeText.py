@@ -56,6 +56,7 @@ class AnalyzeText:
             self._frequency_list = np.array([zipf_frequency(word, self.language[:2]) for word in self.filtered_list])
             self.median = np.median(self._frequency_list)
             self.mean = np.mean(self._frequency_list)
+        print(self._frequency_list)
         return self._frequency_list
 
     @frequency_list.setter
@@ -174,7 +175,7 @@ class AnalyzeText:
         return positions
 
     @staticmethod
-    def get_context_around_index(text, index, distance=50, get_whole_word=True):
+    def get_context_around_index(text, index, distance=100, get_whole_word=True):
         if get_whole_word:
             start = end = distance
 
@@ -199,7 +200,6 @@ class AnalyzeText:
         if not words:
             words_with_frequency = self.get_c1_words_from_text()
             words = [word for (word, freq) in words_with_frequency]
-            print(f'words: {words_with_frequency}\nlen: {len(words)}')
         words_with_context = defaultdict(list)
         for word in words:
             positions = self.get_word_positions(self.text, word, only_start=True)

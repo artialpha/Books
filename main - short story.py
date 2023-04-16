@@ -12,7 +12,7 @@ an = AnalyzeText(text)
 
 # 2. I pick a zipf range
 an.c1_zipf_ceiling = 4
-an.c1_zipf_floor = 1
+an.c1_zipf_floor = 0
 
 # 3. I get words and contexts from the text
 words_with_context = an.get_words_with_context()
