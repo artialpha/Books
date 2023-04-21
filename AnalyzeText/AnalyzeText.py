@@ -4,18 +4,19 @@ import numpy as np
 import requests
 from wordfreq import zipf_frequency  # https://pypi.org/project/wordfreq/
 from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords, wordnet
 from PyPDF2 import PdfReader
 from pickle import dump, load
 from os.path import exists
 from os import listdir
 from bs4 import BeautifulSoup
-from lemminflect import getAllLemmas, getAllInflections  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
+from lemminflect import getAllLemmas, getAllInflections, getLemma  # https://lemminflect.readthedocs.io/en/latest/lemmatizer/
 from urllib.request import urlretrieve
 from re import finditer, IGNORECASE
 from collections import defaultdict
 nltk.download("stopwords")
 nltk.download('punkt')
+nltk.download('wordnet')
 
 
 class AnalyzeText:
@@ -209,10 +210,30 @@ class AnalyzeText:
         return words_with_context
 
     @staticmethod
-    def save_words(words_with_context, path='words list.txt'):
-        words = [f'{word}\n' for word in words_with_context.keys()]
+    def save_words(words_with_context, path='words list.txt', save_lemmas=False):
+        lines_to_save = None
+        words = [word for word in words_with_context.keys()]
+        if save_lemmas:
+            lines = []
+            for word in words:
+                lemma_part = 'lemma: '
+                lemmas_dict = defaultdict(list)
+
+                for tag, lemma in getAllLemmas(word).items():
+                    lemmas_dict[lemma].append(tag)
+                #print(f'{lemmas_dict=}')
+                for lemma, tags in lemmas_dict.items():
+                    lemma_part += f'{lemma[0]} ({tags}) / '
+
+                word_part = f'word from text: {word}'
+                line = f'{lemma_part.rstrip(" /"):<60} {word_part:<30}'
+                lines.append(line)
+            lines_to_save = lines
+        else:
+            lines_to_save = words
         with open(path, 'w') as file:
-            file.writelines(words)
+            print(lines_to_save)
+            file.write('\n'.join(str(line) for line in lines_to_save))
 
     @staticmethod
     def save_words_and_context(words_with_context, path='words with context list.txt'):

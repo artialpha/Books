@@ -34,6 +34,7 @@ if __name__ == '__main__':
 
             # text to analyze
             an = AnalyzeText(text)
+            print(an.get_c1_words_from_text())
 
             # 2. I pick a zipf range
             an.c1_zipf_ceiling = 4
@@ -43,7 +44,7 @@ if __name__ == '__main__':
             words_with_context = an.get_words_with_context()
 
             # 4. I save vocabulary
-            an.save_words(words_with_context)
+            an.save_words(words_with_context, save_lemmas=True)
             an.save_words_and_context(words_with_context)
 
             # 5. There I can make some changes to words list and if so, then I need to get contexts again
