@@ -11,6 +11,7 @@ if __name__ == '__main__':
               "Give me the name of a file that is inside 'books' folder and that you want to work with:")
         #path = input()
         path = "01 Harry Potter and the Sorcerer's Stone - J.K. Rowling.epub"
+        print(f"\nSo we will work with a file: {path}\n")
         print('Options:\n'
               '1. I want to see a contents page. \n'
               '2. I want to see a contents page and some text from it.\n'
