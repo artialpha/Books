@@ -18,6 +18,8 @@ nltk.download("stopwords")
 nltk.download('punkt')
 nltk.download('wordnet')
 
+DEFAULT_DISTANCE = 1000
+
 
 class AnalyzeText:
 
@@ -172,7 +174,16 @@ class AnalyzeText:
         return positions
 
     @staticmethod
-    def get_context_around_index(text, index, distance=100, get_whole_word=True):
+    def get_context_around_index(text, index, distance=DEFAULT_DISTANCE, get_whole_word=True):
+        end_of_sentence = text.find('.', index)
+        text = text[:end_of_sentence] + "</b>" + text[end_of_sentence:]
+
+        if (start_of_sentence := text.rfind('.', 0, index)) != -1:
+            text = text[:start_of_sentence] + "<b>" + text[start_of_sentence:]
+        else:
+            text = "<b>" + text
+
+
         if get_whole_word:
             start = end = distance
 
@@ -227,14 +238,14 @@ class AnalyzeText:
             lines_to_save = lines
         else:
             lines_to_save = words
-        with open(path, 'w') as file:
+        with open(path, 'w', encoding="utf-8") as file:
             print(lines_to_save)
             file.write('\n'.join(str(line) for line in lines_to_save))
 
     @staticmethod
     def save_words_and_context(words_with_context, path='words with context list.txt'):
         words_with_context = [f'{word}: {", ".join(contexts)}\n' for word, contexts in words_with_context.items()]
-        with open(path, 'w') as file:
+        with open(path, 'w', encoding="utf-8") as file:
             file.writelines(words_with_context)
 
     @staticmethod

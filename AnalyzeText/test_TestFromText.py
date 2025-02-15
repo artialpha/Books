@@ -12,10 +12,11 @@ class TestTestFromText(TestCase):
 
     def test_get_question_line(self):
         words = ['dog', 'bird', 'cat', 'cow', 'bull', 'mouse', 'snake', 'crocodile', 'wolf', 'lion', 'goat', 'dragon',
-                 'viper', 'sheep', 'doe', 'stag']
+                 'viper', 'sheep', 'doe', 'stag', 'cry', 'yell', 'speak', 'mutter', 'swim', 'speak', 'shut', 'resist']
         for word in words:
             abcd = TestFromText.get_options_line(words, word)
             self.assertEqual(1, abcd.count(word))
+            print(abcd)
 
     def test_create_questions_list(self):
         print(f'{listdir()}')
@@ -41,3 +42,13 @@ class TestTestFromText(TestCase):
         print(f'{words_with_context=}')
         test = TestFromText(words_with_context)
         test.create_test_file_with_questions_answers_txt()
+
+    def test_create_anki_cards(self):
+        with open(r'AnalyzeText\data for tests\texts\Forgetting', mode='r', encoding='utf-8') as f:
+            text = f.read()
+
+        an = AnalyzeText(text)
+        words_with_context = an.get_words_with_context()
+        # print(f'{words_with_context=}')
+        test = TestFromText(words_with_context)
+        test.create_anki_cards()
